@@ -1,19 +1,23 @@
 package tacos.web.controllers;
 
 import jakarta.validation.Valid;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.validation.Errors;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.SessionAttributes;
+import tacos.data.IngredientRepository;
 import tacos.dto.Ingredient;
 import tacos.dto.Taco;
 import tacos.dto.TacoOrder;
 import tacos.enums.Type;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Controller
@@ -21,47 +25,54 @@ import java.util.stream.Collectors;
 @SessionAttributes("tacoOrder")
 public class DesignTacoController {
 
-    @ModelAttribute
-    public void addIngredientsToModel(Model model) { // TODO: Change this to use ingredient data from db
-        List<Ingredient> ingredients = Arrays.asList(new Ingredient("FLTO", "Flour Tortilla", Type.WRAP), new Ingredient("COTO", "Corn Tortilla", Type.WRAP), new Ingredient("GRBF", "Ground Beef", Type.PROTEIN), new Ingredient("CARN", "Carnitas", Type.PROTEIN), new Ingredient("TMTO", "Diced Tomatoes", Type.VEGGIES), new Ingredient("LETC", "Lettuce", Type.VEGGIES), new Ingredient("CHED", "Cheddar", Type.CHEESE), new Ingredient("JACK", "Monterrey Jack", Type.CHEESE), new Ingredient("SLSA", "Salsa", Type.SAUCE), new Ingredient("SRCR", "Sour Cream", Type.SAUCE));
+  private final IngredientRepository ingredientRepo;
 
-        Type[] types = Type.values();
+  @Autowired
+  public DesignTacoController(IngredientRepository ingredientRepo) {
+    this.ingredientRepo = ingredientRepo;
+  }
 
-        for (Type type : types) {
-            model.addAttribute(type.toString().toLowerCase(), filterByType(ingredients, type));
-        }
+  @ModelAttribute
+  public void addIngredientsToModel(Model model) { // TODO: Change this to use ingredient data from db
+    Iterable<Ingredient> ingredients = ingredientRepo.findAll();
+    Type[] types = Type.values();
+    for (Type type : types) {
+      model.addAttribute(type.toString().toLowerCase(),
+      filterByType((List<Ingredient>) ingredients, type));
+    }
+  }
+
+  @ModelAttribute(name = "tacoOrder")
+  public TacoOrder order() {
+    return new TacoOrder();
+  }
+
+  @ModelAttribute(name = "taco")
+  public Taco taco() {
+    return new Taco();
+  }
+
+  @GetMapping
+  public String showDesignForm() {
+    return "design";
+  }
+
+  @PostMapping
+  public String processTaco(@Valid Taco taco, Errors errors, @ModelAttribute TacoOrder tacoOrder) {
+
+    if (errors.hasErrors()) {
+      return "design";
     }
 
-    @ModelAttribute(name = "tacoOrder")
-    public TacoOrder order() {
-        return new TacoOrder();
-    }
+    tacoOrder.addTaco(taco);
+    log.info("Processing taco: {}", taco);
 
-    @ModelAttribute(name = "taco")
-    public Taco taco() {
-        return new Taco();
-    }
+    return "redirect:/orders/current";
+  }
 
-    @GetMapping
-    public String showDesignForm() {
-        return "design";
-    }
-
-    @PostMapping
-    public String processTaco(@Valid Taco taco, Errors errors, @ModelAttribute TacoOrder tacoOrder) {
-
-        if (errors.hasErrors()) {
-            return "design";
-        }
-
-        tacoOrder.addTaco(taco);
-        log.info("Processing taco: {}", taco);
-
-        return "redirect:/orders/current";
-    }
-
-    private Iterable<Ingredient> filterByType(List<Ingredient> ingredients, Type type) {
-        return ingredients.stream().filter(ingredient -> ingredient.getType().equals(type)).collect(Collectors.toList());
-    }
+  private Iterable<Ingredient> filterByType(List<Ingredient> ingredients, Type type) {
+    return ingredients.stream().filter(ingredient -> ingredient.getType().equals(type))
+        .collect(Collectors.toList());
+  }
 
 }
