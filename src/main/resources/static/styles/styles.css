@@ -1,38 +1,42 @@
 :root {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 body {
-    max-width: 100vw;
-    min-height: 100vh;
-    margin: 0 auto;
+  max-width: 100vw;
+  min-height: 100vh;
+  margin: 0 auto;
 }
 
 *, *::before, *::after {
-    box-sizing: inherit;
-    margin: 0;
-    padding: 0;
-    text-decoration: none;
-    list-style: none;
+  box-sizing: inherit;
+  margin: 0;
+  padding: 0;
+  text-decoration: none;
+  list-style: none;
 }
 
 img {
-    width: 100%;
-    display: block;
+  width: 100%;
+  display: block;
 }
 
 .logo {
-    width: clamp(100px, 20vw, 500px)
+  width: clamp(100px, 20vw, 500px)
 }
 
 .ingredient-group label {
-    font-size: clamp(1.25rem, 3vw, 1.5rem);
-    font-weight: bold;
-    margin-block: 1rem;
-    height: auto;
+  font-size: clamp(1.25rem, 3vw, 1.5rem);
+  font-weight: bold;
+  margin-block: 1rem;
+  height: auto;
 }
 
 .grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.validationError {
+  color: red;
 }

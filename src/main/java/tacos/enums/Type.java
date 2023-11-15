@@ -1,5 +1,5 @@
 package tacos.enums;
 
 public enum Type {
-    WRAP, PROTEIN, VEGGIES, CHEESE, SAUCE
+  WRAP, PROTEIN, VEGGIES, CHEESE, SAUCE
 }
