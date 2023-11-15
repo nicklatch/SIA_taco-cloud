@@ -22,7 +22,7 @@ img {
 }
 
 .logo {
-    width: clamp(10vw, 500px, 33vw)
+    width: clamp(100px, 20vw, 500px)
 }
 
 .ingredient-group label {
