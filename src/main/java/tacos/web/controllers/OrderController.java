@@ -17,21 +17,21 @@ import tacos.dto.TacoOrder;
 @SessionAttributes("tacoOrder")
 public class OrderController {
 
-    @GetMapping("/current")
-    public String orderForm() {
-        return "orderForm";
+  @GetMapping("/current")
+  public String orderForm() {
+    return "orderForm";
+  }
+
+  @PostMapping
+  public String processOrder(@Valid TacoOrder order, Errors errors, SessionStatus sessionStatus) {
+
+    if (errors.hasErrors()) {
+      return "orderForm";
     }
 
-    @PostMapping
-    public String processOrder(@Valid TacoOrder order, Errors errors, SessionStatus sessionStatus) {
+    log.info("Order submitted: {}", order);
+    sessionStatus.setComplete();
 
-        if (errors.hasErrors()) { // TODO: Left off at 2.3.3 Displaying validation errors
-            return "orderForm";
-        }
-
-        log.info("Order submitted: {}", order);
-        sessionStatus.setComplete();
-
-        return "redirect:/";
-    }
+    return "redirect:/";
+  }
 }
