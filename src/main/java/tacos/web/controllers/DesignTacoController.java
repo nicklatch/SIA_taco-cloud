@@ -33,12 +33,12 @@ public class DesignTacoController {
   }
 
   @ModelAttribute
-  public void addIngredientsToModel(Model model) { // TODO: Change this to use ingredient data from db
+  public void addIngredientsToModel(Model model) {
     Iterable<Ingredient> ingredients = ingredientRepo.findAll();
     Type[] types = Type.values();
     for (Type type : types) {
       model.addAttribute(type.toString().toLowerCase(),
-      filterByType((List<Ingredient>) ingredients, type));
+          filterByType((List<Ingredient>) ingredients, type));
     }
   }
 
